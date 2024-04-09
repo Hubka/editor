@@ -4,10 +4,9 @@ import { CKEditorModule, ChangeEvent } from '@ckeditor/ckeditor5-angular';
 import { EditorConfig } from '@ckeditor/ckeditor5-core';
 import { DocumentEditor } from '@gateway/components/editor';
 import { estimateDoc } from './estimate-doc';
-import { NxWelcomeComponent } from './nx-welcome.component';
 @Component({
   standalone: true,
-  imports: [NxWelcomeComponent, RouterModule, CKEditorModule],
+  imports: [RouterModule, CKEditorModule],
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

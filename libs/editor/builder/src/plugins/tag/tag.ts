@@ -1,7 +1,7 @@
 import { Command, Plugin } from '@ckeditor/ckeditor5-core';
-import { addListToDropdown, clickOutsideHandler, ContextualBalloon, createDropdown, ViewModel } from '@ckeditor/ckeditor5-ui';
+import { ContextualBalloon, ViewModel, addListToDropdown, clickOutsideHandler, createDropdown } from '@ckeditor/ckeditor5-ui';
 import { Collection } from '@ckeditor/ckeditor5-utils';
-import { toWidget, viewToModelPositionOutsideModelElement, Widget } from '@ckeditor/ckeditor5-widget';
+import { Widget, toWidget, viewToModelPositionOutsideModelElement } from '@ckeditor/ckeditor5-widget';
 import { ConfigView } from './config-view';
 
 export class Tag extends Plugin {
@@ -23,7 +23,9 @@ class TagCommand extends Command {
          });
 
          // ... and insert it into the document. Put the selection on the inserted element.
-         editor.model.insertObject(placeholder, null, null, { setSelection: 'on' });
+         editor.model.insertObject(placeholder, null, null, {
+            setSelection: 'on'
+         });
       });
    }
 
@@ -92,7 +94,7 @@ class TagUI extends Plugin {
 
    _createFormView(): ConfigView {
       const editor = this.editor;
-      const configView = new ConfigView(editor.locale);
+      const configView = new ConfigView(editor.locale as any);
 
       this.listenTo(configView, 'submit', () => {
          const title =

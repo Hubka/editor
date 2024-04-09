@@ -1,3 +1,9 @@
 {
-  "singleQuote": true
+  "singleQuote": true,
+  "printWidth": 140,
+  "trailingComma": "none",
+  "tabWidth": 3,
+  "semi": true,
+  "bracketSpacing": true,
+  "overrides": [{ "files": "*.json", "options": { "printWidth": 180 } }]
 }

@@ -11,7 +11,7 @@ export class ConfigView extends View {
    public childViews: Collection<View>;
 
    constructor(locale: Locale) {
-      super(locale);
+      super(locale as any);
 
       this.abbrInputView = this._createInput('Add abbreviation');
       this.titleInputView = this._createInput('Add title');
@@ -27,7 +27,7 @@ export class ConfigView extends View {
       this.cancelButtonView.delegate('execute').to(this, 'cancel');
 
       //
-      this.childViews = this.createCollection([this.abbrInputView, this.titleInputView, this.saveButtonView, this.cancelButtonView]);
+      this.childViews = this.createCollection([this.abbrInputView, this.titleInputView, this.saveButtonView, this.cancelButtonView]) as any;
 
       this.setTemplate({
          tag: 'form',
