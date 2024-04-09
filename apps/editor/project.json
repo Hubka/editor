@@ -17,8 +17,7 @@
         "tsConfig": "apps/editor/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": ["apps/editor/src/favicon.ico", "apps/editor/src/assets"],
-        "styles": ["apps/editor/src/styles.scss"],
-        "scripts": []
+        "styles": ["apps/editor/src/styles.scss"]
       },
       "configurations": {
         "production": {

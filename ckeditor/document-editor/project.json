@@ -1,0 +1,24 @@
+{
+   "name": "ckeditor-document-editor",
+   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+   "sourceRoot": "libs/ckeditor/document-editor/src",
+   "projectType": "library",
+   "targets": {
+      "lint": {
+         "executor": "@nrwl/linter:eslint",
+         "outputs": ["{options.outputFile}"],
+         "options": {
+            "lintFilePatterns": ["libs/ckeditor/document-editor/**/*.ts"]
+         }
+      },
+      "test": {
+         "executor": "@nrwl/jest:jest",
+         "outputs": ["coverage/libs/ckeditor/document-editor"],
+         "options": {
+            "jestConfig": "libs/ckeditor/document-editor/jest.config.ts",
+            "passWithNoTests": true
+         }
+      }
+   },
+   "tags": []
+}

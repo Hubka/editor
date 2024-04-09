@@ -1,1 +1,19 @@
-<app-nx-welcome></app-nx-welcome> <router-outlet></router-outlet>
+<button (click)="startEditing()">
+  {{ isEditing ? 'Stop editing' : 'Start editing' }}
+</button>
+<hr />
+
+<div #toolbar></div>
+
+<div class="document-container">
+  <div class="page">
+    <ckeditor
+      [editor]="Editor"
+      [data]="content"
+      [config]="config"
+      (ready)="onReady($event)"
+      (change)="onChange($event)"
+      (focus)="onFocus($event)"
+    ></ckeditor>
+  </div>
+</div>
