@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CKEditorModule, ChangeEvent } from '@ckeditor/ckeditor5-angular';
 import { EditorConfig } from '@ckeditor/ckeditor5-core';
-import { DocumentEditor } from 'ckeditor/document-editor/src/index';
+import { DocumentEditor } from '@gateway/components/editor';
 import { estimateDoc } from './estimate-doc';
 import { NxWelcomeComponent } from './nx-welcome.component';
 @Component({

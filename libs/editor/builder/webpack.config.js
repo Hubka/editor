@@ -24,7 +24,7 @@ module.exports = {
       // The name under which the editor will be exported.
       library: 'DecoupledEditor',
 
-      path: path.resolve(__dirname, '../../libs/ckeditor/document-editor/src/lib'),
+      path: path.resolve(__dirname, '../document-editor/src/lib'),
       filename: 'ckeditor.js',
       libraryTarget: 'umd',
       libraryExport: 'default'

@@ -48,7 +48,7 @@
     "webpack-cli": "4.10.0"
   },
   "scripts": {
-    "build": "rm -rf ../../libs/ckeditor/document-editor/src/lib/translations && webpack --mode production",
+    "build": "rm -rf ../document-editor/src/lib/translations && webpack --mode production",
     "postbuild": "tsc --declaration --declarationDir build --stripInternal --emitDeclarationOnly"
   }
 }
