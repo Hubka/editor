@@ -166,8 +166,6 @@ export default class FinanceTableUI extends Plugin {
       const view = this.editor.editing.view;
       const selection = view.document.selection as any;
 
-      console.log(selection.getFirstRange().getTrimmed());
-
       if (selection.isCollapsed) {
          return findLinkElementAncestor(selection.getFirstPosition());
       } else {
@@ -204,6 +202,7 @@ function getRangeText(range: any) {
 function findLinkElementAncestor(position: any) {
    return position.getAncestors().find((ancestor: any) => isLinkElement(ancestor));
 }
+
 function isLinkElement(node: any) {
    return node.name === 'abbr';
 }

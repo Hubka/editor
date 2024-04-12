@@ -26,6 +26,7 @@ import { Table, TableCellProperties, TableProperties, TableToolbar } from '@cked
 import { TextTransformation } from '@ckeditor/ckeditor5-typing';
 import { Undo } from '@ckeditor/ckeditor5-undo';
 import FinanceTable from './plugins/finance-table/finance-table';
+import { SimpleBox } from './plugins/simple-box/simple-box';
 
 // You can read more about extending the build with additional plugins in the "Installing plugins" guide.
 // See https://ckeditor.com/docs/ckeditor5/latest/installation/plugins/installing-plugins.html for details.
@@ -69,7 +70,8 @@ class Editor extends DecoupledEditor {
       TodoList,
       Underline,
       Undo,
-      FinanceTable
+      FinanceTable,
+      SimpleBox
    ];
 
    public static override defaultConfig: EditorConfig = {
@@ -79,11 +81,6 @@ class Editor extends DecoupledEditor {
             '|',
             'fontSize',
             'fontFamily',
-            '|',
-            'fontColor',
-            'fontBackgroundColor',
-            '|',
-            'bold',
             'italic',
             'underline',
             'strikethrough',
@@ -105,7 +102,8 @@ class Editor extends DecoupledEditor {
             '|',
             'undo',
             'redo',
-            'finance-table'
+            'finance-table',
+            'simpleBox'
          ]
       },
       language: 'en',

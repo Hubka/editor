@@ -8,6 +8,7 @@ export default class FinanceTableEditing extends Plugin {
 
       this.editor.commands.add('addFinanceTable', new FinanceTableCommand(this.editor));
    }
+
    _defineSchema() {
       const schema = this.editor.model.schema;
 
@@ -16,6 +17,7 @@ export default class FinanceTableEditing extends Plugin {
          allowAttributes: ['financeTable']
       });
    }
+
    _defineConverters() {
       const conversion = this.editor.conversion;
 
@@ -45,6 +47,7 @@ export default class FinanceTableEditing extends Plugin {
             // Callback function provides access to the view element
             value: (viewElement: any) => {
                const title = viewElement.getAttribute('title');
+
                return title;
             }
          }
