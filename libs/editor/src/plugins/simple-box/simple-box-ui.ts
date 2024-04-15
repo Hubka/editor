@@ -1,35 +1,196 @@
 import { Plugin } from '@ckeditor/ckeditor5-core';
-import { ButtonView } from '@ckeditor/ckeditor5-ui';
+import { ClickObserver } from '@ckeditor/ckeditor5-engine';
+import { ButtonView, ContextualBalloon, clickOutsideHandler } from '@ckeditor/ckeditor5-ui';
+import SimpleBoxFormView from './simple-box-view';
 
 export class SimpleBoxUI extends Plugin {
+   static get requires() {
+      return [ContextualBalloon];
+   }
+
+   _balloon: any;
+   formView: any;
+   _areActionsVisible: any;
+   _isUIInPanel: any;
+   _isUIVisible: any;
+
    init() {
       const editor = this.editor;
-      const t = editor.t;
 
-      // The "simpleBox" button must be registered among the UI components of the editor
-      // to be displayed in the toolbar.
-      editor.ui.componentFactory.add('simpleBox', (locale) => {
-         // The state of the button will be bound to the widget command.
-         const command = editor.commands.get('insertSimpleBox') as any;
+      // Create the balloon and the form view.
+      this._balloon = this.editor.plugins.get(ContextualBalloon);
+      this.formView = this._createFormView();
 
-         // The button will be an instance of ButtonView.
-         const buttonView = new ButtonView(locale);
+      editor.ui.componentFactory.add('simpleBox', () => {
+         const button = new ButtonView();
 
-         buttonView.set({
-            // The t() function helps localize the editor. All strings enclosed in t() can be
-            // translated and change when the language of the editor changes.
-            label: t('Simple Box'),
-            withText: true,
-            tooltip: true
+         button.label = 'Simple Box';
+         button.tooltip = true;
+         button.withText = true;
+
+         // Show the UI on button click.
+         this.listenTo(button, 'execute', () => {
+            this._showUI();
          });
 
-         // Bind the state of the button to the command.
-         buttonView.bind('isOn', 'isEnabled').to(command, 'value', 'isEnabled');
+         return button;
+      });
 
-         // Execute the command when the button is clicked (executed).
-         this.listenTo(buttonView, 'execute', () => editor.execute('insertSimpleBox'));
+      this._enableUserBalloonInteractions();
+   }
 
-         return buttonView;
+   _enableUserBalloonInteractions() {
+      const view = this.editor.editing.view;
+      const viewDocument = view.document;
+
+      view.addObserver(ClickObserver);
+
+      this.listenTo(viewDocument, 'click', () => {
+         const parentLink = this._getSelectedLinkElement();
+
+         if (parentLink) {
+            // Then show panel but keep focus inside editor editable.
+            this._showUI();
+         }
+      });
+
+      // Close the panel on the Esc key press when the editable has focus and the balloon is visible.
+      this.editor.keystrokes.set('Esc', (data, cancel) => {
+         if (this._isUIVisible) {
+            this._hideUI();
+            cancel();
+         }
+      });
+
+      // Close on click outside of balloon panel element.
+      clickOutsideHandler({
+         emitter: this.formView,
+         activator: () => this._isUIInPanel,
+         contextElements: [this._balloon.view.element],
+         callback: () => this._hideUI()
       });
    }
+
+   _getSelectedLinkElement() {
+      const view = this.editor.editing.view;
+      const selection = view.document.selection as any;
+
+      if (selection.isCollapsed) {
+         return findLinkElementAncestor(selection.getFirstPosition());
+      } else {
+         // The range for fully selected link is usually anchored in adjacent text nodes.
+         // Trim it to get closer to the actual link element.
+         const range = selection.getFirstRange().getTrimmed();
+         const startLink = findLinkElementAncestor(range.start);
+         const endLink = findLinkElementAncestor(range.end);
+
+         if (!startLink || startLink != endLink) {
+            return null;
+         }
+
+         // Check if the link element is fully selected.
+         if (view.createRangeIn(startLink).getTrimmed().isEqual(range)) {
+            return startLink;
+         } else {
+            return null;
+         }
+      }
+   }
+
+   _createFormView() {
+      const editor = this.editor;
+      const formView = new SimpleBoxFormView(editor.locale) as any;
+
+      // Execute the command after clicking the "Save" button.
+      this.listenTo(formView, 'submit', () => {
+         // Grab values from the finance-table and title input fields.
+         const value = {
+            abbr: formView.abbrInputView.fieldView.element.value,
+            title: formView.titleInputView.fieldView.element.value
+         };
+
+         editor.execute('insertSimpleBox', value);
+
+         // Hide the form view after submit.
+         this._hideUI();
+      });
+
+      // Hide the form view after clicking the "Cancel" button.
+      this.listenTo(formView, 'cancel', () => {
+         this._hideUI();
+      });
+
+      // Hide the form view when clicking outside the balloon.
+      clickOutsideHandler({
+         emitter: formView,
+         activator: () => this._balloon.visibleView === formView,
+         contextElements: [this._balloon.view.element],
+         callback: () => this._hideUI()
+      });
+
+      return formView;
+   }
+
+   _hideUI() {
+      // Clear the input field values and reset the form.
+      this.formView.abbrInputView.fieldView.value = '';
+      this.formView.titleInputView.fieldView.value = '';
+      this.formView.element.reset();
+
+      this._balloon.remove(this.formView);
+
+      // Focus the editing view after inserting the finance-table so the user can start typing the content
+      // right away and keep the editor focused.
+      this.editor.editing.view.focus();
+   }
+
+   _showUI() {
+      const selection = this.editor.model.document.selection as any;
+
+      // Check the value of the command.
+      const commandValue = this.editor.commands.get('addFinanceTable')!.value as any;
+
+      this._balloon.add({
+         view: this.formView,
+         position: this._getBalloonPositionData()
+      });
+
+      // Disable the input when the selection is not collapsed.
+      this.formView.abbrInputView.isEnabled = selection.getFirstRange().isCollapsed;
+
+      // Fill the form using the state (value) of the command.
+      if (commandValue) {
+         this.formView.abbrInputView.fieldView.value = commandValue.abbr;
+         this.formView.titleInputView.fieldView.value = commandValue.title;
+      }
+
+      this.formView.focus();
+   }
+
+   _getBalloonPositionData() {
+      const view = this.editor.editing.view;
+      const viewDocument = view.document as any;
+      let target = null;
+
+      // Set a target position by converting view selection range to DOM
+      target = () => view.domConverter.viewRangeToDom(viewDocument.selection.getFirstRange());
+
+      return {
+         target
+      };
+   }
+}
+function findLinkElementAncestor(position: any) {
+   return position.getAncestors().find((ancestor: any) => isLinkElement(ancestor));
+}
+
+function isLinkElement(node: any) {
+   if (node._classes?.has('simple-box')) {
+      return true;
+   }
+
+   if (node._children) {
+      return node._children.find((ancestor: any) => isLinkElement(ancestor));
+   }
+   return false;
 }

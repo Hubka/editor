@@ -24,10 +24,6 @@ export class AppComponent {
    public editorRef!: DocumentEditor;
    public isEditing = false;
 
-   constructor() {
-      console.log('DocumentEditor', DocumentEditor);
-   }
-
    public onReady(editor: DocumentEditor | any): void {
       this.toolbar.nativeElement.appendChild(editor.ui.view.toolbar.element);
       this.editorRef = editor;
@@ -55,15 +51,11 @@ export class AppComponent {
 
       document.querySelectorAll('.simple-box').forEach((el) => {
          const listener = () => {
-            console.log('Clicked', el);
             const fakeDoc = document.createElement('html');
             fakeDoc.innerHTML = data;
 
             fakeDoc.querySelectorAll('.simple-box')[0].innerHTML =
                `<h1 class="simple-box-title ck-editor__editable ck-editor__nested-editable" role="textbox" contenteditable="true">MIKE</h1><div class="simple-box-description ck-editor__editable ck-editor__nested-editable" role="textbox" contenteditable="true"><p><br data-cke-filler="true"></p></div>`;
-
-            console.log('Content', fakeDoc.innerHTML);
-            console.log('------');
 
             this.content = fakeDoc.innerHTML;
          };
